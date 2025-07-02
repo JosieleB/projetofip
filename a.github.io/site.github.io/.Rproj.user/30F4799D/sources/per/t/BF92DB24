@@ -1,14 +1,14 @@
 {
-    "id": "EE72FA0C",
-    "path": "~/GitHub/projetofip/a.github.io/site.github.io/arenas.qmd",
-    "project_path": "arenas.qmd",
+    "id": "BF92DB24",
+    "path": "~/GitHub/projetofip/a.github.io/site.github.io/repelencia.qmd",
+    "project_path": "repelencia.qmd",
     "type": "quarto_markdown",
-    "hash": "0",
+    "hash": "996783580",
     "contents": "",
     "dirty": false,
-    "created": 1751383120260.0,
+    "created": 1751383173725.0,
     "source_on_save": false,
-    "relative_order": 3,
+    "relative_order": 4,
     "properties": {
         "rmdVisualMode": "true",
         "rmdVisualWrapConfigured": "true",
@@ -17,7 +17,7 @@
         "docOutlineVisible": "1",
         "rmdVisualCollapsedChunks": "",
         "rmdVisualModeLocation": "2:0",
-        "cursorPosition": "185,0",
+        "cursorPosition": "23,0",
         "scrollLine": "0"
     },
     "folds": "",
@@ -25,7 +25,7 @@
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1751455097156,
+    "last_content_update": 1751455097521,
     "read_only": false,
     "read_only_alternatives": []
 }
