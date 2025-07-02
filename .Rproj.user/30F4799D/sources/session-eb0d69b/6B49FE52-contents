@@ -1,10 +1,14 @@
 project:
   type: website
+  output-dir: docs
 
 website:
   title: "FenoGuard"
   description: "Efeito de Fenóis no Controle de Carunchos"
   favicon: "favicon.ico"
+  
+  # Configuração alternativa para base-url em versões mais recentes
+  site-url: https://josieleb.github.io/projetofip/
 
   navbar:
     background: "primary"
@@ -14,7 +18,7 @@ website:
     left:
       - icon: bug
         text: "Home"
-        href: index.qmd
+        href: index.qmd  # Mantido como .qmd
 
   sidebar:
     style: "floating"
@@ -36,14 +40,13 @@ website:
             href: arenas.qmd
           - text: "Repelência fenois - com base no cálculo de indíce"
             href: repelencia.qmd
-          - text: " Repelência - por tratamento"
+          - text: "Repelência - por tratamento"
             href: tratamentos.qmd
       - section: "🖥️ Aplicativo" 
         contents:
           - text: "Resíduos de pesticidas em Alimentos"
             href: simulador.qmd
             icon: apple-whole
-
 
 format:
   html:

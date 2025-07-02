@@ -1,0 +1,53 @@
+/* styles.css */
+
+.sidebar-logo {
+  max-width: 100%;
+  margin-bottom: 10px;
+}
+
+.navbar-brand {
+  font-weight: bold;
+  font-size: 1.4rem;
+}
+
+.quarto-title-banner {
+  background-color: #DDE9E0;
+  padding: 1.5rem;
+  text-align: center;
+  border-radius: 10px;
+}
+
+a:hover {
+  color: #007B5E;
+  text-decoration: underline;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  line-height: 1.6;
+}
+
+/* Rodapé personalizado */
+footer {
+  background-color: #f8f9fa;   /* Fundo claro, similar ao tema minty */
+  color: #333333;              /* Texto escuro */
+  text-align: center;
+  padding: 1em 0;
+  font-size: 0.9em;
+  border-top: 1px solid #ddd;  /* Linha separadora fina no topo */
+  margin-top: 3em;
+}
+
+footer a {
+  color: #333333;              /* Links na mesma cor do texto */
+  text-decoration: none;
+  margin: 0 0.5em;
+  transition: color 0.3s ease;
+}
+
+footer a:hover,
+footer a:focus {
+  color: #007bff;              /* Cor azul suave no hover */
+  text-decoration: underline;
+}
+
