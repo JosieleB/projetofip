@@ -1,8 +1,6 @@
 ---
-title: "index"
-author: "Josiele"
-date: "`r Sys.Date()`"
-output: html_document
+title: "Efeito de Fenóis no Controle de Carunchos"
+editor: visual
 ---
 
 O caruncho do milho (Sitophilus zeamais) é uma das principais pragas que afetam grãos armazenados e produtos alimentícios à base de cereais no mundo todo. Esses pequenos insetos medem entre 2 e 3,5 mm, apresentam coloração castanho-escura e possuem um rostro curvado característico. Suas larvas têm coloração amarelada, enquanto as pupas são brancas. Tanto as larvas quanto os adultos se alimentam internamente dos grãos, causando prejuízos significativos. Embora a infestação possa começar no campo, a maior parte dos danos ocorre durante o armazenamento, quando os insetos consomem internamente os grãos, provocando perda de peso, deterioração pela proliferação de fungos e redução da qualidade, além de aumentar os níveis de ácidos graxos livres, afetando o valor comercial do produto.

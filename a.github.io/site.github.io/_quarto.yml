@@ -14,7 +14,7 @@ website:
     left:
       - icon: bug
         text: "Home"
-        href: index.htlm.Rmd
+        href: index.qmd
 
   sidebar:
     style: "floating"
