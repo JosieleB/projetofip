@@ -1,0 +1,10 @@
+---
+title: "simulador"
+editor: visual
+---
+
+### Painel de Monitoramento de Resíduos de Pesticidas
+
+Se você se interessa por toxicologia, temos também um aplicativo que oferece informações de forma intuitiva sobre os pesticidas mais comumente encontrados em produtos de diferentes países. Além disso, o usuário pode consultar os limites máximos de resíduos permitidos em alimentos, com base nos dados fornecidos pelo Ministério da Agricultura, Pecuária e Abastecimento (MAPA).
+
+[`https://josielebroetto.shinyapps.io/pesticidesinfood/`](https://josielebroetto.shinyapps.io/pesticidesinfood/)

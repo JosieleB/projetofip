@@ -1,0 +1,1 @@
+{"frames":[],"message":"Error in arenas %>% group_by(trat, local) %>% summarise(media_num = mean(num),  : \n  não foi possível encontrar a função \"%>%\"\n"}

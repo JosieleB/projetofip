@@ -1,0 +1,567 @@
+---
+title: "Comparação em cada tratamento"
+editor: visual
+---
+
+# Análise da Repelência por Tratamento
+
+## Baixando e organizando os dados
+
+```{r}
+arenas <- read.csv("arenas_fip606.csv", header = T, stringsAsFactors = T)
+
+# Analisar as variáveis do modelo
+if(!require(dplyr)) install.packages("dplyr") 
+library(dplyr)
+
+glimpse(arenas)
+
+# Ajustar variáveis no dataframe para facilitar análises futuras
+arenas$local <- as.character(arenas$local)
+
+arenas$local <- ifelse(arenas$local == -1, "neg_1", arenas$local)
+arenas$local <- ifelse(arenas$local == "-0,5", "neg_05", arenas$local)
+```
+
+```{r}
+# Criando novos dataframes por tratamento
+
+datant <- arenas %>% 
+  filter(trat == "NT")
+
+datae <- arenas %>% 
+  filter(trat == "E")
+
+datag <- arenas %>% 
+  filter(trat == "G")
+
+datac <- arenas %>% 
+  filter(trat == "C")
+
+datat <- arenas %>% 
+  filter(trat == "T")
+```
+
+## Gerando modelos
+
+```{r}
+
+modnt <- kruskal.test(num ~ local, data = datant)
+print(modnt)
+
+mode <- kruskal.test(num ~ local, data = datae)
+print(mode)
+
+modg <- kruskal.test(num ~ local, data = datag)
+print(modg)
+
+modc <- kruskal.test(num ~ local, data = datac)
+print(modc)
+
+modt <- kruskal.test(num ~ local, data = datat)
+print(modt)
+
+
+# Todos os modelos apresentam diferenças significativas e se adequam aos dados
+
+# Modelos foram testados com kruskal-wallis pois haviamos a informação de que as variáveis não seguem os pressupostos de normalidade e homocedasticidade
+```
+
+## Análise de pressupostos
+
+### Normalidade
+
+```{r}
+if(!require(nortest)) install.packages("nortest")
+library(nortest)
+
+datant %>%
+  group_by(trat) %>%
+  summarise(
+    Estatística_Shapiro = shapiro.test(num)$statistic,
+    p_valor = shapiro.test(num)$p.value
+  )
+
+datae %>%
+  group_by(trat) %>%
+  summarise(
+    Estatística_Shapiro = shapiro.test(num)$statistic,
+    p_valor = shapiro.test(num)$p.value
+  )
+
+datag %>%
+  group_by(trat) %>%
+  summarise(
+    Estatística_Shapiro = shapiro.test(num)$statistic,
+    p_valor = shapiro.test(num)$p.value
+  )
+
+datac %>%
+  group_by(trat) %>%
+  summarise(
+    Estatística_Shapiro = shapiro.test(num)$statistic,
+    p_valor = shapiro.test(num)$p.value
+  )
+
+datat %>%
+  group_by(trat) %>%
+  summarise(
+    Estatística_Shapiro = shapiro.test(num)$statistic,
+    p_valor = shapiro.test(num)$p.value
+  )
+
+# Confrimamos que os dados de interesse não seguem o pressuposto de normalidade
+```
+
+### Homocedasticidade
+
+```{r}
+bartlett.test(num ~ local, data = datant)
+
+bartlett.test(num ~ local, data = datae)
+
+bartlett.test(num ~ local, data = datag)
+
+bartlett.test(num ~ local, data = datac)
+
+bartlett.test(num ~ local, data = datat)
+
+# Confrimamos que os dados de interesse não seguem o pressuposto de homocedasticidade
+```
+
+## Testes post hoc
+
+### Dados do tratamento NT (Controle)
+
+#### Teste post-hoc
+
+```{r}
+if(!require(rstatix)) install.packages("rstatix")
+library(rstatix) 
+
+# Teste de Dunn é o post-hoc utilizado para modelos de Kruskal-Wallis
+dunn_nt <- dunn_test(num ~ local, data = datant, p.adjust.method = "bonferroni")
+```
+
+#### Organizando as letras e ordem dos resultados do tratamento NT
+
+```{r}
+if(!require(multcompView)) install.packages("multcompView")
+library(multcompView)
+
+# Criar matriz de comparações para o multcompView
+p_nt <- setNames(dunn_nt$p.adj, 
+                    paste(dunn_nt$group1, dunn_nt$group2, sep = "-"))
+
+# Obter letras de significância
+letter_nt <- multcompLetters(p_nt)
+
+# Preparar dados para o gráfico
+letras_plot_nt <- data.frame(
+  local = names(letter_nt$Letters),
+  letra = letter_nt$Letters,
+  y_pos = max(datant$num) * 1.1)
+
+
+
+# Definir a ordem desejada das variáveis no eixo x
+
+ordem_desejada <- c("neg_1", "neg_05", "0", "0,5", "1")
+
+# Converter a variável 'local' em fator com a ordem correta
+datant <- datant %>%
+  mutate(local = factor(local, 
+                       levels = c("neg_1", "neg_05", "0", "0,5", "1"),
+                       labels = ordem_desejada))
+
+# Atualizar também o dataframe letras_plot
+if(exists("letras_plot_nt")) {
+  letras_plot_nt <- letras_plot_nt %>%
+    mutate(local = factor(local, 
+                         levels = c("neg_1", "neg_05", "0", "0,5", "1"),
+                         labels = ordem_desejada))
+  }
+
+
+# Modificar os níveis do fator nos dados
+datant <- datant %>%
+  mutate(local = factor(local,
+                       levels = c("neg_1", "neg_05", "0", "0,5", "1"),
+                       labels = c("-1", "-0.5", "0", "0.5", "1")))
+
+# Atualizar o dataframe letras_plot
+letras_plot_nt <- letras_plot_nt %>%
+  mutate(local = factor(local,
+                       levels = c("neg_1", "neg_05", "0", "0,5", "1"),
+                       labels = c("-1", "-0.5", "0", "0.5", "1")))
+
+```
+
+#### Gráfico do tratamento NT
+
+```{r}
+if(!require(ggplot2)) install.packages("ggplot2")
+library(ggplot2)
+
+ggplot(datant, aes(x = local, y = num)) +
+  geom_boxplot(aes(fill = local), width = 0.6, show.legend = FALSE) +
+  geom_text(data = letras_plot_nt, 
+            aes(x = local, y = y_pos, label = letra),
+            size = 6, vjust = 0) +
+  labs(
+    title = "Distribuição por Local",
+    subtitle = paste("Teste Kruskal-Wallis, p =", format.pval(mode$p.value, digits = 3)),
+    x = "Local",
+    y = "Número de Insetos"
+  ) +
+  theme_minimal(base_size = 14) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.2))) +
+  scale_fill_viridis_d(option = "D", begin = 0.2, end = 0.8)
+```
+
+### Dados do tratamento E
+
+#### Teste post-hoc
+
+```{r}
+if(!require(rstatix)) install.packages("rstatix")
+library(rstatix) 
+
+# Teste de Dunn é o post-hoc utilizado para modelos de Kruskal-Wallis
+dunn_e <- dunn_test(num ~ local, data = datae, p.adjust.method = "bonferroni")
+```
+
+#### Organizando as letras e ordem dos resultados do tratamento E
+
+```{r}
+if(!require(multcompView)) install.packages("multcompView")
+library(multcompView)
+if(!require(dplyr)) install.packages("dplyr")
+library(dplyr)
+
+# Criar matriz de comparações para o multcompView
+p_values <- setNames(dunn_e$p.adj, 
+                    paste(dunn_e$group1, dunn_e$group2, sep = "-"))
+
+# Obter letras de significância
+letter_info <- multcompLetters(p_values)
+
+# Preparar dados para o gráfico
+letras_plot <- data.frame(
+  local = names(letter_info$Letters),
+  letra = letter_info$Letters,
+  y_pos = max(datae$num) * 1.1
+)
+
+# Definir a ordem desejada das variáveis no eixo x
+ordem_desejada <- c("neg_1", "neg_05", "0", "0,5", "1")  # Padronizando para ponto decimal
+
+# Converter a variável 'local' em fator com a ordem correta
+datae <- datae %>%
+  mutate(local = factor(
+    local, 
+    levels = c("neg_1", "neg_05", "0", "0,5", "1"),
+    labels = c("-1", "-0.5", "0", "0.5", "1")
+  ))
+
+# Atualizar também o dataframe letras_plot
+if(exists("letras_plot")) {
+  letras_plot <- letras_plot %>%
+    mutate(local = factor(
+      local, 
+      levels = c("neg_1", "neg_05", "0", "0,5", "1"),
+      labels = c("-1", "-0.5", "0", "0.5", "1")
+    ))
+}
+```
+
+#### Gráfico do tratamento E
+
+```{r}
+if(!require(ggplot2)) install.packages("ggplot2")
+library(ggplot2)
+
+ggplot(datae, aes(x = local, y = num)) +
+  geom_boxplot(aes(fill = local), width = 0.6, show.legend = FALSE) +
+  geom_text(data = letras_plot, 
+            aes(x = local, y = y_pos, label = letra),
+            size = 6, vjust = 0) +
+  labs(
+    title = "Distribuição por Local",
+    subtitle = paste("Teste Kruskal-Wallis, p =", format.pval(mode$p.value, digits = 3)),
+    x = "Local",
+    y = "Número de Insetos"
+  ) +
+  theme_minimal(base_size = 14) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.2))) +
+  scale_fill_viridis_d(option = "D", begin = 0.2, end = 0.8)
+```
+
+### Dados do tratamento G
+
+#### Teste post-hoc
+
+```{r}
+if(!require(rstatix)) install.packages("rstatix")
+library(rstatix) 
+
+# Teste de Dunn é o post-hoc utilizado para modelos de Kruskal-Wallis
+dunn_g <- dunn_test(num ~ local, data = datag, p.adjust.method = "bonferroni")
+```
+
+#### Organizando as letras e ordem dos resultados do tratamento G
+
+```{r}
+if(!require(multcompView)) install.packages("multcompView")
+library(multcompView)
+
+# Criar matriz de comparações para o multcompView
+p_g <- setNames(dunn_nt$p.adj, 
+                    paste(dunn_g$group1, dunn_g$group2, sep = "-"))
+
+# Obter letras de significância
+letter_g <- multcompLetters(p_g)
+
+# Preparar dados para o gráfico
+letras_plot_g <- data.frame(
+  local = names(letter_g$Letters),
+  letra = letter_g$Letters,
+  y_pos = max(datag$num) * 1.1)
+
+
+
+# Definir a ordem desejada das variáveis no eixo x
+
+ordem_desejada <- c("neg_1", "neg_05", "0", "0,5", "1")
+
+# Converter a variável 'local' em fator com a ordem correta
+datag <- datag %>%
+  mutate(local = factor(local, 
+                       levels = c("neg_1", "neg_05", "0", "0,5", "1"),
+                       labels = ordem_desejada))
+
+# Atualizar também o dataframe letras_plot
+if(exists("letras_plot_g")) {
+  letras_plot_g <- letras_plot_g %>%
+    mutate(local = factor(local, 
+                         levels = c("neg_1", "neg_05", "0", "0,5", "1"),
+                         labels = ordem_desejada))
+  }
+
+
+# Modificar os níveis do fator nos dados
+datag <- datag %>%
+  mutate(local = factor(local,
+                       levels = c("neg_1", "neg_05", "0", "0,5", "1"),
+                       labels = c("-1", "-0.5", "0", "0.5", "1")))
+
+# Atualizar o dataframe letras_plot
+letras_plot_g <- letras_plot_g %>%
+  mutate(local = factor(local,
+                       levels = c("neg_1", "neg_05", "0", "0,5", "1"),
+                       labels = c("-1", "-0.5", "0", "0.5", "1")))
+
+```
+
+#### Gráfico do tratamento G
+
+```{r}
+if(!require(ggplot2)) install.packages("ggplot2")
+library(ggplot2)
+
+ggplot(datag, aes(x = local, y = num)) +
+  geom_boxplot(aes(fill = local), width = 0.6, show.legend = FALSE) +
+  geom_text(data = letras_plot_g, 
+            aes(x = local, y = y_pos, label = letra),
+            size = 6, vjust = 0) +
+  labs(
+    title = "Distribuição por Local",
+    subtitle = paste("Teste Kruskal-Wallis, p =", format.pval(mode$p.value, digits = 3)),
+    x = "Local",
+    y = "Número de Insetos"
+  ) +
+  theme_minimal(base_size = 14) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.2))) +
+  scale_fill_viridis_d(option = "D", begin = 0.2, end = 0.8)
+```
+
+### Dados do tratamento C
+
+#### Teste post-hoc
+
+```{r}
+if(!require(rstatix)) install.packages("rstatix")
+library(rstatix) 
+
+# Teste de Dunn é o post-hoc utilizado para modelos de Kruskal-Wallis
+dunn_c <- dunn_test(num ~ local, data = datac, p.adjust.method = "bonferroni")
+```
+
+#### Organizando as letras e ordem dos resultados do tratamento C
+
+```{r}
+if(!require(multcompView)) install.packages("multcompView")
+library(multcompView)
+
+# Criar matriz de comparações para o multcompView
+p_c <- setNames(dunn_c$p.adj, 
+                    paste(dunn_c$group1, dunn_c$group2, sep = "-"))
+
+# Obter letras de significância
+letter_c <- multcompLetters(p_c)
+
+# Preparar dados para o gráfico
+letras_plot_c <- data.frame(
+  local = names(letter_c$Letters),
+  letra = letter_c$Letters,
+  y_pos = max(datac$num) * 1.1)
+
+
+
+# Definir a ordem desejada das variáveis no eixo x
+
+ordem_desejada <- c("neg_1", "neg_05", "0", "0,5", "1")
+
+# Converter a variável 'local' em fator com a ordem correta
+datac <- datac %>%
+  mutate(local = factor(local, 
+                       levels = c("neg_1", "neg_05", "0", "0,5", "1"),
+                       labels = ordem_desejada))
+
+# Atualizar também o dataframe letras_plot
+if(exists("letras_plot_c")) {
+  letras_plot_c <- letras_plot_c %>%
+    mutate(local = factor(local, 
+                         levels = c("neg_1", "neg_05", "0", "0,5", "1"),
+                         labels = ordem_desejada))
+  }
+
+
+# Modificar os níveis do fator nos dados
+datac <- datac %>%
+  mutate(local = factor(local,
+                       levels = c("neg_1", "neg_05", "0", "0,5", "1"),
+                       labels = c("-1", "-0.5", "0", "0.5", "1")))
+
+# Atualizar o dataframe letras_plot
+letras_plot_c <- letras_plot_c %>%
+  mutate(local = factor(local,
+                       levels = c("neg_1", "neg_05", "0", "0,5", "1"),
+                       labels = c("-1", "-0.5", "0", "0.5", "1")))
+
+```
+
+#### Gráfico do tratamento C
+
+```{r}
+if(!require(ggplot2)) install.packages("ggplot2")
+library(ggplot2)
+
+ggplot(datac, aes(x = local, y = num)) +
+  geom_boxplot(aes(fill = local), width = 0.6, show.legend = FALSE) +
+  geom_text(data = letras_plot_c, 
+            aes(x = local, y = y_pos, label = letra),
+            size = 6, vjust = 0) +
+  labs(
+    title = "Distribuição por Local",
+    subtitle = paste("Teste Kruskal-Wallis, p =", format.pval(mode$p.value, digits = 3)),
+    x = "Local",
+    y = "Número de Insetos"
+  ) +
+  theme_minimal(base_size = 14) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.2))) +
+  scale_fill_viridis_d(option = "D", begin = 0.2, end = 0.8)
+```
+
+### Dados do tratamento T
+
+#### Teste post-hoc
+
+```{r}
+if(!require(rstatix)) install.packages("rstatix")
+library(rstatix) 
+
+# Teste de Dunn é o post-hoc utilizado para modelos de Kruskal-Wallis
+dunn_t <- dunn_test(num ~ local, data = datat, p.adjust.method = "bonferroni")
+```
+
+#### Organizando as letras e ordem dos resultados do tratamento T
+
+```{r}
+if(!require(multcompView)) install.packages("multcompView")
+library(multcompView)
+
+# Criar matriz de comparações para o multcompView
+p_t <- setNames(dunn_t$p.adj, 
+                    paste(dunn_t$group1, dunn_t$group2, sep = "-"))
+
+# Obter letras de significância
+letter_t <- multcompLetters(p_t)
+
+# Preparar dados para o gráfico
+letras_plot_t <- data.frame(
+  local = names(letter_t$Letters),
+  letra = letter_t$Letters,
+  y_pos = max(datat$num) * 1.1)
+
+
+
+# Definir a ordem desejada das variáveis no eixo x
+
+ordem_desejada <- c("neg_1", "neg_05", "0", "0,5", "1")
+
+# Converter a variável 'local' em fator com a ordem correta
+datat <- datat %>%
+  mutate(local = factor(local, 
+                       levels = c("neg_1", "neg_05", "0", "0,5", "1"),
+                       labels = ordem_desejada))
+
+# Atualizar também o dataframe letras_plot
+if(exists("letras_plot_c")) {
+  letras_plot_t <- letras_plot_t %>%
+    mutate(local = factor(local, 
+                         levels = c("neg_1", "neg_05", "0", "0,5", "1"),
+                         labels = ordem_desejada))
+  }
+
+
+# Modificar os níveis do fator nos dados
+datat <- datat %>%
+  mutate(local = factor(local,
+                       levels = c("neg_1", "neg_05", "0", "0,5", "1"),
+                       labels = c("-1", "-0.5", "0", "0.5", "1")))
+
+# Atualizar o dataframe letras_plot
+letras_plot_t <- letras_plot_t %>%
+  mutate(local = factor(local,
+                       levels = c("neg_1", "neg_05", "0", "0,5", "1"),
+                       labels = c("-1", "-0.5", "0", "0.5", "1")))
+
+
+```
+
+#### Gráfico do tratamento T
+
+```{r}
+if(!require(ggplot2)) install.packages("ggplot2")
+library(ggplot2)
+
+ggplot(datat, aes(x = local, y = num)) +
+  geom_boxplot(aes(fill = local), width = 0.6, show.legend = FALSE) +
+  geom_text(data = letras_plot_t, 
+            aes(x = local, y = y_pos, label = letra),
+            size = 6, vjust = 0) +
+  labs(
+    title = "Distribuição por Local",
+    subtitle = paste("Teste Kruskal-Wallis, p =", format.pval(mode$p.value, digits = 3)),
+    x = "Local",
+    y = "Número de Insetos"
+  ) +
+  theme_minimal(base_size = 14) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.2))) +
+  scale_fill_viridis_d(option = "D", begin = 0.2, end = 0.8)
+```
+
+Com isso, podemos concluir que em todos os tratamentos, os insetos preferem as extremidades do sistema fechado, onde o alimento é presente. Porém, não há diferenças significativas entre as câmaras com alimento contaminado com composto repelente e as câmaras sem a contaminação.
+
+Isso indica que o efeito de repelência dos compostos não é significativo.

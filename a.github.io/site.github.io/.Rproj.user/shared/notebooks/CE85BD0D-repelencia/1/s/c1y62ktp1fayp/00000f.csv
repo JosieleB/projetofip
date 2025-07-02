@@ -1,0 +1,6 @@
+"0","cld_df <- as.data.frame(cld_result) %>%"
+"0","  dplyr::select(trat, .group) %>% "
+"0","  rename(label = .group)      "
+"2","Error in as.data.frame(cld_result) %>% dplyr::select(trat, .group) %>%  : 
+  não foi possível encontrar a função ""%>%""
+"

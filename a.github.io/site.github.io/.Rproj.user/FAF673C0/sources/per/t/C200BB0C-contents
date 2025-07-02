@@ -1,0 +1,236 @@
+---
+title: "Efeitos no Índice de Repelência"
+editor: visual
+---
+
+# Repelência fenois - com base no cálculo de indíce
+
+## Baixando os dados
+
+```{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE}
+rep <- read.csv("indice_fip606.csv", header = T, stringsAsFactors = T)
+
+# Analisar as variáveis do modelo
+if(!require(dplyr)) install.packages("dplyr") 
+library(dplyr)    
+
+glimpse(rep)
+
+# Substituindo vírgulas por pontos em rep$indice
+
+rep$indice <- as.numeric(gsub(",", ".", rep$indice))
+
+glimpse(rep)
+```
+
+*A adequação da pontuação utilizada nos dados é importante para o reconhecimento dos tipos das mesmas pelo programa.*
+
+## Visualizando os dados
+
+```{r, echo=FALSE, eval=TRUE}
+if(!require(ggplot2)) install.packages("ggplot2") 
+library(ggplot2)
+
+# Definir a paleta de cores personalizada para os tratamentos
+paleta_cores <- c(
+  "NT" = "#D0E789",
+  "C"  = "#50A34B",
+  "E"  = "#3320A2",
+  "G"  = "#8D0987",
+  "T"  = "darkorange"
+)
+
+# Criar o gráfico com a paleta de cores
+ggplot(rep, aes(x = tempo, y = indice, color = trat)) +
+  geom_jitter(alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE) + # Linhas de regressão para cada tratamento
+  labs(title = "Índice por Tempo e Tratamento",
+       x = "Tempo",
+       y = "Índice",
+       color = "Tratamento") +
+  theme_minimal() +
+  scale_color_manual(values = paleta_cores)  # Aplique a paleta de cores personalizada
+
+```
+
+*Devido a natureza dos dados, e a nossa intenção de análise dos efeitos do tempo e dos tratamentos sobre o índice de repelencia do estudo, organizamos um modelo de Análise de Covariância (ANCOVA).*
+
+## Criando o modelo estatístico
+
+```{r, echo=FALSE, eval=TRUE}
+# Testando modelo com interação
+
+mod <- lm(indice ~ tempo + trat + tempo * trat, data = rep)
+
+summary(mod)
+
+# As interações não foram significativas, vamos testar o modelo sem interações
+
+mod <- lm(indice ~ tempo + trat, data = rep)
+
+summary(mod)
+```
+
+*O modelo sem interações se mostrou o ideal. O que significa que as variaveis de tempo e tratamento não apresentam interações significativas entre si.*
+
+## Avaliação de pressupostos
+
+```{r, echo=FALSE, eval=TRUE}
+# Normalidade de resíduos
+
+if(!require(nortest)) install.packages("nortest") 
+library(nortest)
+
+plot(residuals(mod))
+
+lillie.test(residuals(mod)) # Não atende pressupostos
+
+# Homocedastiticade
+
+bartlett.test(indice ~ tempo, data = rep) # Atende pressupostos
+bartlett.test(indice ~ trat, data = rep) # Não atende pressupostos
+```
+
+*Como os resultados dos testes apontam que os dados não seguem os pressupostos estabelecidos para uma Análise de Covariância (normalidade de resíduos e homogeneidade de variâncias), optamos por seguir utilizando uma alternativa não paramétrica da ANCOVA.*
+
+## Adaptando para modelo não paramétrico
+
+```{r, echo=FALSE, eval=TRUE}
+# Teste com glm familia beta (betareg)
+# Carregar pacotes
+if(!require(betareg)) install.packages("betareg") 
+library(betareg)
+if(!require(car)) install.packages("car") 
+library(car)
+
+# Dados separados para adaptação
+rep_beta <- rep
+# Garantir que o índice esteja estritamente entre -100 e 100
+rep_beta$indice <- pmax(-99.99, pmin(99.99, rep_beta$indice))
+
+
+# Reescalar a variável resposta 'indice' para o intervalo (0, 1)
+
+# Essa variável aparece no intervalo de -100 a 100, porém, a análise de Regressão Beta necessita de valores no espaço de 0 a 1.
+
+# Então, para a análise, utilizaremos uma adaptação, onde faremos a proporção dos valores de -100 a 100 para valores representados entre 0 e 1.
+
+epsilon <- 0.0001 # Um valor pequeno para evitar 0 e 1 exatos
+rep_beta <- rep_beta %>%
+  mutate(indice_rescalado = (indice - (-100)) / (100 - (-100))) %>% # Mapeia para [0,1]
+  mutate(indice_rescalado = (indice_rescalado * (1 - 2 * epsilon)) + epsilon) 
+
+print(summary(rep_beta$indice_rescalado))
+
+print(head(rep_beta))
+
+
+# Ajustar o Modelo Beta Regression sem interação
+# O 'link = "logit"' é o padrão e geralmente a melhor escolha para dados Beta.
+modbeta <- betareg(indice_rescalado ~ tempo + trat, data = rep_beta)
+
+summary(modbeta)
+
+Anova(modbeta, type = 2)
+
+
+```
+
+*A distribuição beta, do modelo de regressão linear generalizada, é o que melhor consegue descrever os dados. Isso está relacionado com o fato de ser eficaz para grupos de dados com limites inferior e superior (geralmente entre 0 e 1).*
+*Conseguimos utilizar esse modelo após transformarmos os nossos dados para se adequarem de forma proporcional nesse modelo.*
+
+## Teste post-hoc
+
+```{r, echo=FALSE, eval=TRUE}
+if(!require(multcomp)) install.packages("multcomp") 
+library(multcomp)
+if(!require(emmeans)) install.packages("emmeans") 
+library(emmeans)
+
+# Calcular as médias marginais estimadas para cada tratamento, ajustadas em relação ao tempo
+em_means_trat <- emmeans(modbeta, ~ trat, type = "response")
+print(em_means_trat)
+
+# Realizar as comparações post-hoc com ajuste de Tukey
+pairs(em_means_trat, adjust = "tukey")
+
+
+cld_result <- cld(em_means_trat, adjust = "tukey", Letters = LETTERS)
+message("\n--- Resultado do CLD (letras de agrupamento) ---")
+print(cld_result)
+```
+
+## Adaptando as letras do teste post-hoc para utilizá-las no gráfico
+
+```{r, echo=FALSE, eval=TRUE}
+cld_df <- as.data.frame(cld_result) %>%
+  dplyr::select(trat, .group) %>% 
+  rename(label = .group)      
+
+pos_x_letras <- max(rep_beta$tempo)
+
+# Criar um dataframe de nova_data para prever o Y no tempo máximo para cada 'trat'
+
+df_para_prever_letras <- data.frame(
+  trat = levels(rep_beta$trat),
+  tempo = pos_x_letras # Usa o tempo máximo para todas as previsões
+)
+
+# Fazer a previsão na escala reescalada e depois transformar
+previsoes_y_letras <- predict(modbeta, newdata = df_para_prever_letras, type = "response")
+
+# Transformar previsões para a escala ORIGINAL (-100 a 100)
+previsoes_y_letras_original <- ((previsoes_y_letras - epsilon) / (1 - 2 * epsilon)) * 200 - 100
+
+# Adicionar as previsões ao dataframe
+df_para_prever_letras$y_pos_original <- previsoes_y_letras_original
+
+# Ajustar corretamente a altura das letras
+
+df_para_prever_letras$y_pos_original[1] <- -40
+df_para_prever_letras$y_pos_original[2] <- 1
+df_para_prever_letras$y_pos_original[3] <- 11.20000
+df_para_prever_letras$y_pos_original[4] <- 20
+df_para_prever_letras$y_pos_original[5] <- -30
+
+# Unir as letras CLD com as posições Y previstas
+plot_labels_cld <- left_join(df_para_prever_letras, cld_df, by = "trat") %>%
+  mutate(y_pos_final = y_pos_original + 5)
+
+```
+
+## Geração do gráfico
+
+```{r, echo=FALSE, eval=TRUE}
+# Definir a paleta de cores personalizada para os tratamentos
+paleta_cores <- c(
+  "NT" = "#D0E789",
+  "C"  = "#50A34B",
+  "E"  = "#3320A2",
+  "G"  = "#8D0987",
+  "T"  = "darkorange"
+)
+
+# Criar o gráfico com a paleta de cores personalizada
+ggplot(rep_beta, aes(x = tempo, y = indice, colour = trat)) +
+  geom_jitter(width = 0.1, height = 0.5, alpha = 0.6) +
+  geom_smooth(formula = y ~ x, se = FALSE, size = 0.8) +
+  geom_text(data = plot_labels_cld,
+            aes(x = tempo, y = y_pos_final, label = label, color = trat),
+            size = 3,
+            hjust = -0.1,  # Ajuste para a letra ficar um pouco à direita do final da linha
+            vjust = 0.5,  # Ajusta o alinhamento vertical da letra
+            show.legend = FALSE) +  # Não mostrar as letras na legenda
+  labs(
+    title = "Índice Original por Tempo e Tratamento com CLD",
+    x = "Tempo",
+    y = "Índice Original (-100 a 100)",
+    color = "Tratamento"
+  ) +
+  scale_y_continuous(limits = c(-100, 100 + 10)) +
+  scale_x_continuous(limits = c(min(rep_beta$tempo), max(rep_beta$tempo) + 1)) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_color_manual(values = paleta_cores)  # Aplique a paleta de cores personalizada
+
+```

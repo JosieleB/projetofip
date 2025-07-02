@@ -1,0 +1,5 @@
+"0","library(kableExtra)"
+"0","kable(head(data_surv, 7), col.names = c(""Tratamento"", ""Horas"", ""Sensor"")) %>%"
+"0","  kable_styling(full_width = FALSE, bootstrap_options = c(""striped"", ""hover"", ""condensed"", ""responsive"")) %>%"
+"0","  kable_paper(""striped"", full_width = FALSE, font_size = 9) %>%"
+"0","  column_spec(1, color = ""white"", background = spec_color(mtcars$drat[1:8], end = 0.7), popover = paste(""am:"", mtcars$am[1:8]))"

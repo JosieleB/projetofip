@@ -1,0 +1,7 @@
+"0",""
+"0","datae %>%"
+"0","  group_by(trat) %>%"
+"0","  summarise("
+"0","    Estatística_Shapiro = shapiro.test(num)$statistic,"
+"0","    p_valor = shapiro.test(num)$p.value"
+"0","  )"

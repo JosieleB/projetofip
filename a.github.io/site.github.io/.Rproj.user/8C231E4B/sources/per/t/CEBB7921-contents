@@ -1,0 +1,67 @@
+project:
+  type: website
+
+website:
+  title: "FenoGuard"
+  description: "Efeito de Fenóis no Controle de Carunchos"
+  favicon: "favicon.ico"
+
+  navbar:
+    background: "primary"
+    foreground: "white"
+    search: true
+    collapse: true
+    left:
+      - icon: bug
+        text: "Home"
+        href: index.qmd
+
+  sidebar:
+    style: "floating"
+    width: 300px
+    collapse-level: 1
+    logo: "logo.png"
+    search: true
+    contents:
+      - section: "🧪 Dados Experimentais"  
+        badge: "Dataset"
+        contents:
+          - text: "Metodologia"
+            href: metodologia.qmd
+      - section: "📊 Análises"
+        contents:
+          - text: "Sobrevivência"
+            href: sob.qmd
+          - text: "Repelência - Teste X"
+            href: anova.qmd
+          - text: "Índice Caruncho-MET"
+            href: indice.qmd
+          - text: "Análise Temporal"
+            href: temporal.qmd
+          - text: "Análise de Preferência"
+            href: arenas.qmd
+          - text: "Efeitos no Índice de Repelência"
+            href: repelencia.qmd
+          - text: "Análise da Repelência por Tratamento"
+            href: tratamentos.qmd
+      - section: "🖥️ Aplicativo" 
+        contents:
+          - text: "Simulador de Resíduos em Alimentos"
+            href: simulador.qmd
+            icon: apple-whole
+
+
+format:
+  html:
+    theme: 
+      light: minty
+      dark: cyborg
+    css: 
+      - styles.css
+      - "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"
+    toc: true
+    toc-depth: 2
+    page-layout: full
+    fig-align: center
+    mainfont: "Roboto"
+    include-after-body: footer.html

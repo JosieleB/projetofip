@@ -1,0 +1,26 @@
+{
+  "about.qmd": {
+    "about.html": "7bd6b4a9"
+  },
+  "index.qmd": {
+    "index.html": "9781aab3"
+  },
+  "metodologia.qmd": {
+    "metodologia.html": "5043024f"
+  },
+  "arenas.qmd": {
+    "arenas.html": "148efbca"
+  },
+  "repelencia.qmd": {
+    "repelencia.html": "d7727007"
+  },
+  "tratamentos.qmd": {
+    "tratamentos.html": "2bfd70b2"
+  },
+  "sob.qmd": {
+    "sob.html": "4fc04d28"
+  },
+  "simulador.qmd": {
+    "simulador.html": "e110e3db"
+  }
+}

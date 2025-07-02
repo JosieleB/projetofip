@@ -1,0 +1,4 @@
+"0","if(!require(rstatix)) install.packages(""rstatix"")"
+"0","library(rstatix) "
+"0",""
+"0","dunn_nt <- dunn_test(num ~ local, data = datant, p.adjust.method = ""bonferroni"")"

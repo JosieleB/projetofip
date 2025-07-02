@@ -1,0 +1,15 @@
+{
+  "hash": "dbfff17b3914bd1500613dd39ed346d7",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Home\"\n---\n\n\n\n\nThis is a Quarto website.\n\nTo learn more about Quarto websites visit <https://quarto.org/docs/websites>.\n\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\n1 + 1\n```\n\n::: {.cell-output .cell-output-stdout}\n\n```\n[1] 2\n```\n\n\n:::\n:::\n\n---\ntitle: \"Home\"\nformat: html\n---\n\n\n\n\n## Sobre o Projeto\n\nEste é um projeto que investiga o uso de fenóis naturais como repelentes ou tóxicos para o controle de carunchos.\n\nQueremos entender o comportamento e a sobrevivência desses insetos frente a diferentes compostos químicos, com potencial de aplicação em armazenagem de grãos.\n\n------------------------------------------------------------------------\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

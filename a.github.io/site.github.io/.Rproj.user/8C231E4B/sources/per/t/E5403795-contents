@@ -1,0 +1,159 @@
+---
+title: "Projeto FIP606"
+author: "Davi Lira & Josiele Broetto"
+format: html
+editor: visual
+---
+
+# Análise da preferência dos insetos entre alimentos tratados e não tratados com diferentes compostos químicos
+
+## Baixando os dados
+
+```{r}
+arenas <- read.csv("arenas_fip606.csv", header = T, stringsAsFactors = T)
+
+# Analisar as variáveis do modelo
+if(!require(dplyr)) install.packages("dplyr") 
+library(dplyr)
+
+glimpse(arenas)
+```
+
+## Criando o modelo estatístico
+
+```{r}
+if(!require(lme4)) install.packages("lme4") 
+library(lme4)
+
+if(!require(glmmTMB)) install.packages("glmmTMB")
+library(glmmTMB) 
+
+mod1 <- glmmTMB(num ~ trat * local * tempo + (1|tempo),
+                 data = arenas,
+                 family = nbinom2)
+
+summary(mod1)
+
+mod2 <- glmmTMB(num ~ trat * local,
+                 data = arenas,
+                 family = nbinom2)
+
+summary(mod2)
+
+mod3 <- glmer(num ~ trat * local * tempo + (1|tempo), 
+      data = arenas, 
+      family = poisson(link = "log"))
+
+AIC(mod1, mod2, mod3)
+
+# Modelo com glmmTMB é melhor, pois possui um AIC menor
+
+# Mesmo com a variável "tempo" não apresentando efeito significativo na nossa análise, optamos por escolher o modelo de glmmTMB com a mesma inclusa, pois acreditamos que ela tem grande influência no nosso delineamento experimental, no método de coleta de dados. 
+```
+
+## Avaliação de pressupostos
+
+```{r}
+# Normalidade de resíduos
+
+if(!require(nortest)) install.packages("nortest")
+library(nortest)
+
+plot(residuals(mod1))
+
+lillie.test(residuals(mod1)) # Não atende pressupostos
+
+# Homocedastiticade
+
+bartlett.test(num ~ tempo, data = arenas) # Não atende pressupostos
+bartlett.test(num ~ trat, data = arenas) # Não atende pressupostos
+bartlett.test(num ~ local, data = arenas) # Não atende pressupostos
+```
+
+## Modelo escolhido
+
+```{r}
+# Modelo misto com binomial negativa (recomendado para dados de contagem com sobredispersão)
+mod1 <- glmmTMB(num ~ trat * loc * tempo + (1|tempo),
+                 data = arenas,
+                 family = nbinom2)
+
+summary(mod1)
+```
+
+## Teste post-hoc
+
+```{r}
+if(!require(emmeans)) install.packages("emmeans")
+library(emmeans)
+if(!require(multcomp)) install.packages("multcomp")
+library(multcomp)
+if(!require(multcompView)) install.packages("multcompView")
+library(multcompView)
+
+# Calcular as médias marginais estimadas
+emm <- emmeans(mod1, pairwise ~ trat * local, adjust = "tukey")
+
+# Obter as comparações
+comparacoes <- as.data.frame(emm$contrasts)
+
+
+# Criar uma matriz de p-valores
+teste_posthoc <- emmeans(mod1, pairwise ~ trat | local)$contrasts %>%
+  summary(infer = TRUE)
+
+# Obter as letras
+letras <- cld(emmeans(mod1, ~ trat | local),
+          adjust = "tukey",
+          Letters = letters,  
+          alpha = 0.05)
+
+# Visualizar as letras
+print(letras)
+
+```
+
+## Geração do gráfico
+
+```{r}
+# Gráfico com as letras de significância
+dados_observados <- arenas %>%
+  group_by(trat, local) %>%
+  summarise(
+    media_num = mean(num),
+    sd_num = sd(num),
+    n = n(),
+    se_num = sd_num / sqrt(n)
+  ) %>%
+  ungroup()
+
+letras_df <- as.data.frame(letras)
+
+# Verificar nomes das colunas
+print(colnames(letras_df))
+
+# Selecionar colunas 
+colunas <- c("trat", "local", ".group")
+letras_selecionadas <- letras_df[, colnames(letras_df) %in% colunas]
+
+# Fazer o join
+dados_completos <- left_join(dados_observados, 
+                            letras_selecionadas,
+                            by = c("trat", "local"))
+# Criar o gráfico
+ggplot(dados_completos, aes(x = trat, y = media_num, fill = trat)) +
+  geom_col(position = position_dodge()) + 
+  geom_errorbar(aes(ymin = media_num - se_num, ymax = media_num + se_num), 
+                width = 0.2, position = position_dodge(0.9)) +
+  geom_text(aes(label = .group, y = media_num + se_num + 0.5), 
+            position = position_dodge(0.9), vjust = 0, size = 3.5) +
+  facet_wrap(~ local, scales = "free_y") +
+  labs(x = "Tratamento", 
+       y = "Número médio observado de insetos",
+       fill = "Tratamento") +
+  theme_minimal() +
+  theme(legend.position = "top") + 
+  scale_y_continuous(limits = c(0, 14)) 
+```
+
+## 

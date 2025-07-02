@@ -1,0 +1,104 @@
+---
+title: "Sobrevivência Caruncho"
+editor: visual
+output: html
+---
+
+# Sobrevivência Caruncho
+
+Os dados do bioensaio de sobrevivência foram submetidos a análise de sobrevivência.
+
+```{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE}
+library(readxl)
+library(dplyr)
+
+# Carregar os dados
+data_surv <- read_excel("sobrevivencia_fenois.xlsx")
+
+# Visualizar os dados sem mostrar o resultado no site
+glimpse(data_surv)
+```
+
+#### A tabela de avaliação foi confeccionada a partir de três variáveis
+
+-   Tratamento = composto fenólico
+
+-   Horas = Tempo após a exposição
+
+-   Sensor = 1 quando um dos insetos mortos e 0 para insetos vivos
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(kableExtra)
+kable(head(data_surv, 7), col.names = c("Tratamento", "Horas", "Sensor")) %>%
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>%
+  kable_paper("striped", full_width = FALSE, font_size = 9) %>%
+  column_spec(1, color = "white", background = spec_color(mtcars$drat[1:8], end = 0.7), popover = paste("am:", mtcars$am[1:8]))
+```
+
+####  Curvas de sobrevivência por Kaplan-Meier
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(survival)
+library(survminer)
+library(survMisc)
+
+# Ajustar o modelo Kaplan-Meier
+fit1 <- survfit(Surv(time, sensor) ~ Trat, data = data_surv)
+
+# Tempo letal mediano
+summary(fit1)$table
+```
+
+*Cravacrol e Eugenol são os tratamentos mais eficazes para o seu objetivo de matar os insetos, pois provocaram a maior taxa de mortalidade.*
+
+#### Diferença entre as curvas de sobrevivência
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+# Teste de diferenças entre as curvas
+surv_diff <- survdiff(Surv(time, sensor) ~ Trat, data = data_surv)
+surv_diff
+
+# Teste par a par
+pairwise_survdiff(Surv(time, sensor) ~ Trat, data = data_surv)
+```
+
+*Apesar de alguns tratamentos, como Guaiacol e Timol, mostrarem menor taxa de mortalidade, o p-valor das comparações indica que não há diferença estatisticamente significativa entre os tratamentos para controlar a mortalidade dos insetos.*
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+# Carregar bibliotecas necessárias
+library(ggforce)
+library(survminer)
+
+# Gerar o gráfico de sobrevivência com momentos de observação (em horas)
+plot <- ggsurvplot(fit1,
+                   axes.offset = TRUE,
+                   pval = TRUE, 
+                   pval.method = TRUE,
+                   pval.method.coord = c(3, 0.09),
+                   pval.coord = c(3, 0.05),
+                   pval.size = 3,
+                   surv.scale = "percent",
+                   conf.int.style = "ribbon",
+                   conf.int.alpha = 0.05,
+                   xlab = "Horas",  # Eixo X rotulado como "Horas"
+                   ylab = "Probabilidade de sobrevivência",
+                   title = "Sobrevivência de adultos",
+                   legend.title = "Tratamentos",
+                   surv.median.line = "hv",
+                   palette = c("#D0E789", "#50A34B", "#3320A2", "#8D0987", "darkorange"),
+                   ggtheme = theme_classic(),
+                   # Ajustar o limite do eixo X (0 a 100 horas, por exemplo)
+                   xlim = c(0, 100))
+
+# Ajustar o limite do eixo Y para começar de 70%
+plot$plot <- plot$plot + coord_cartesian(ylim = c(0.7, 1))
+
+# Customizar os rótulos do eixo X para horas específicas
+plot$plot <- plot$plot + scale_x_continuous(breaks = c(0, 24, 48, 72, 96))
+
+# Exibir o gráfico
+plot
+
+```
+
+*A curva de sobrevivência demonstra que não há diferenças significativas entre tratamentos e controle (p = 0.06).*

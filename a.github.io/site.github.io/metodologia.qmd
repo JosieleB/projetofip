@@ -1,0 +1,39 @@
+---
+title: "Metodologia"
+---
+
+### Insetos e compostos fenólicos
+
+Os insetos utilizados no experimento são da espécie *Sitophilus zeamais* (caruncho do milho), oriundos de uma população coletada em Jacarezinho (PR) e mantida no Laboratório de Ecotoxicologia e Ecofisiologia de Insetos, no Departamento de Entomologia da Universidade Federal de Viçosa. A criação é feita em grãos de milho, em sala climatizada a 26 ± 2°C, com fotoperíodo de 12 horas.
+
+Os compostos fenólicos usados foram adquiridos da empresa Sigma-Aldrich® com grau analítico:
+
+-   **Carvacrol** (98% de pureza, líquido)
+
+-   **Eugenol** (≥99% de pureza, líquido)
+
+-   **Guaiacol** (≥99% de pureza, líquido)
+
+-   **Timol** (≥98,5% de pureza, cristalino)
+
+### Bioensaio de sobrevivência
+
+Foram utilizados insetos adultos, sem distinção de sexo, com até 15 dias de idade. Eles foram expostos a grãos de milho tratados com solução de 10 mmol/L de cada composto fenólico. Para cada tratamento, foram feitas 10 repetições, com 10 insetos por repetição.
+
+Os bioensaios foram realizados em tubos de ensaio de fundo chato, cobertos com tecido tipo organza. Em cada tubo foram colocadas 10 gramas de grãos de milho previamente tratados.
+
+O tratamento dos grãos consistiu em adicionar 3 mL da solução de cada composto (10 mmol/L diluído em 100 mL de água destilada) a 200 g de grãos de milho esterilizados a frio, dentro de potes plásticos. A mistura foi agitada por 1 minuto. Os grãos do grupo controle passaram pelo mesmo processo, mas receberam apenas água destilada. Após o tratamento, todos os grãos foram secos à temperatura ambiente.
+
+A mortalidade dos insetos foi avaliada nos seguintes intervalos: 24, 48, 72 e 96 horas após o início da exposição.
+
+![](images/20250630_2042_Tubos%20de%20Ensaio%20Científicos_remix_01jz1ke1eqes198gytw2dgqv4x-01.png){fig-align="center" width="265"}
+
+### Bioensaio de repelência
+
+A atividade repelente dos compostos fenólicos foi avaliada com o uso de um olfatômetro de ar parado, formado por três placas de Petri de acrílico interligadas, posicionadas em ângulo de 180°. A placa central (8 cm de diâmetro) funcionava como câmara de liberação dos insetos, enquanto as duas placas laterais (5 cm cada) continham os grãos tratados. As câmaras foram conectadas por mangueiras de silicone com 3 cm de comprimento e 0,5 cm de diâmetro.
+
+Em uma das câmaras laterais foram colocados 4 g de grãos tratados apenas com água destilada (controle) e na outra, 4 g de grãos tratados com 10 mmol/L dos compostos fenólicos. Foram liberados 20 insetos adultos na câmara central, com até 15 dias de vida. Cada tratamento teve 5 repetições.
+
+As contagens dos insetos em cada câmara foram feitas nos tempos de 1, 16, 21, 24, 36 e 44 horas após a liberação. Para evitar interferências por posição, a arena experimental era girada 90° no sentido horário após cada repetição.
+
+![](images/20250630_2028_Sistema_de_Placas_Conectadas_remix_01jz1jntqff8d9mx1g39d24s3h-removebg-preview-01.png){fig-align="center"}

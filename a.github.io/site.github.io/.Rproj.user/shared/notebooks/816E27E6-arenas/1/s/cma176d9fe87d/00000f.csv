@@ -1,0 +1,6 @@
+"0","# Normalidade de resíduos"
+"0",""
+"0","if(!require(nortest)) install.packages(""nortest"")"
+"0","library(nortest)"
+"0",""
+"0","plot(residuals(mod1))"
