@@ -1,9 +1,9 @@
 ---
-title: "Estudo de efeito de fenóis no controle de carunchos do milho"
-format: html
+title: "Estudo de efeito de fenóis no controle de carunchos do milho""
+output: html_notebook
 ---
 
-Oquarto render index.qmd --to html caruncho do milho (*Sitophilus zeamais*) é uma das principais pragas que afetam grãos armazenados e produtos alimentícios à base de cereais no mundo todo. Esses pequenos insetos medem entre 2 e 3,5 mm, apresentam coloração castanho-escura e possuem um rostro curvado característico. Suas larvas têm coloração amarelada, enquanto as pupas são brancas. Tanto as larvas quanto os adultos se alimentam internamente dos grãos, causando prejuízos significativos. Embora a infestação possa começar no campo, a maior parte dos danos ocorre durante o armazenamento, quando os insetos consomem internamente os grãos, provocando perda de peso, deterioração pela proliferação de fungos e redução da qualidade, além de aumentar os níveis de ácidos graxos livres, afetando o valor comercial do produto.
+O caruncho do milho (Sitophilus zeamais) é uma das principais pragas que afetam grãos armazenados e produtos alimentícios à base de cereais no mundo todo. Esses pequenos insetos medem entre 2 e 3,5 mm, apresentam coloração castanho-escura e possuem um rostro curvado característico. Suas larvas têm coloração amarelada, enquanto as pupas são brancas. Tanto as larvas quanto os adultos se alimentam internamente dos grãos, causando prejuízos significativos. Embora a infestação possa começar no campo, a maior parte dos danos ocorre durante o armazenamento, quando os insetos consomem internamente os grãos, provocando perda de peso, deterioração pela proliferação de fungos e redução da qualidade, além de aumentar os níveis de ácidos graxos livres, afetando o valor comercial do produto.
 
 A alimentação voraz das larvas compromete cerca de dois terços do endosperma do grão, o que resulta em perdas significativas na produtividade e na qualidade dos cereais armazenados. Isso torna o caruncho do milho uma ameaça constante para produtores e armazenadores, exigindo estratégias eficazes para seu controle.
 
@@ -14,8 +14,6 @@ Nesse contexto, os compostos fenólicos naturais, presentes em óleos essenciais
 O carvacrol, encontrado em óleos essenciais de plantas como tomilho, orégano e manjerona, atua inibindo a enzima acetilcolinesterase dos insetos, além de interagir com seus receptores neurológicos, o que provoca efeitos tóxicos. O metil eugenol, um fenilpropanoide presente em diversas espécies vegetais, possui atividade antimicrobiana e inseticida, além de atuar como repelente de liberação lenta contra mosquitos e besouros. O guaiacol, conhecido por seu aroma defumado e presente em alimentos processados como vinho e café, tem mostrado potencial para o controle de doenças de plantas, apresentando atividade contra patógenos. Já o timol, um monoterpeno encontrado em alta concentração nos óleos essenciais do tomilho, atua na desestabilização da membrana celular de patógenos e insetos, além de possuir propriedades antimicrobianas, anti-inflamatórias e antioxidantes.
 
 Dessa forma, a utilização desses compostos fenólicos naturais se mostra uma alternativa viável para o manejo do caruncho do milho, oferecendo soluções menos tóxicas e ambientalmente mais sustentáveis para o controle dessa praga em ambientes de armazenagem. Pesquisas e projetos que avaliem a eficiência desses compostos como agentes repelentes são fundamentais para o desenvolvimento de estratégias integradas de manejo, reduzindo a dependência de inseticidas químicos e contribuindo para a saúde do consumidor, do trabalhador e do meio ambiente.
-
-------------------------------------------------------------------------
 
 <footer style="background-color: #f8f9fa; color: #333; text-align: center; padding: 1em; font-size: 0.9em; border-top: 1px solid #ddd;">
 
